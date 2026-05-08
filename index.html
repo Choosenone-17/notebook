@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>User Management Table</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Management Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<h2>User Management</h2>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>User Management</h1>
+        <p>Admin dashboard for managing users efficiently</p>
+      </div>
+      <span class="user-count" id="userCount">0 Users</span>
+    </div>
 
-<form id="userForm">
-  <input type="text" id="name" placeholder="Name" required />
-  <input type="email" id="email" placeholder="Email" required />
-  <button type="submit" id="submitBtn" disabled>Add User</button>
-</form>
+    <div class="card">
+      <form id="userForm">
+        <div class="input-group">
+          <input type="text" id="name" placeholder="Enter full name" required />
+          <input type="email" id="email" placeholder="Enter email address" required />
+          <button type="submit" id="submitBtn" disabled>Add User</button>
+        </div>
+      </form>
+    </div>
 
-<table id="userTable">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="Search users..." />
+    </div>
 
-<script src="script.js"></script>
+    <div class="table-card">
+      <table id="userTable">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div id="emptyState" class="empty-state">
+        No users added yet.
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>

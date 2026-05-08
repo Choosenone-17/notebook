@@ -1,51 +1,75 @@
-const form = document.getElementById('userForm');
-const nameInput = document.getElementById('name');
-const emailInput = document.getElementById('email');
-const submitBtn = document.getElementById('submitBtn');
-const tableBody = document.querySelector('#userTable tbody');
+const form = document.getElementById("userForm");
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const submitBtn = document.getElementById("submitBtn");
+const tableBody = document.querySelector("#userTable tbody");
+const searchInput = document.getElementById("searchInput");
+const userCount = document.getElementById("userCount");
+const emptyState = document.getElementById("emptyState");
+const toast = document.getElementById("toast");
 
 let users = [];
 let editIndex = null;
 
-// Validate email
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// Enable/disable submit
 function validateForm() {
-  if (nameInput.value.trim() && isValidEmail(emailInput.value)) {
-    submitBtn.disabled = false;
-  } else {
-    submitBtn.disabled = true;
-  }
+  submitBtn.disabled = !(
+    nameInput.value.trim() && isValidEmail(emailInput.value)
+  );
 }
 
-nameInput.addEventListener('input', validateForm);
-emailInput.addEventListener('input', validateForm);
+nameInput.addEventListener("input", validateForm);
+emailInput.addEventListener("input", validateForm);
 
-// Render table
-function renderTable() {
-  tableBody.innerHTML = '';
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("show");
 
-  users.forEach((user, index) => {
-    const row = document.createElement('tr');
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2000);
+}
+
+function updateUserCount() {
+  userCount.textContent = `${users.length} User${users.length !== 1 ? "s" : ""}`;
+}
+
+function renderTable(filteredUsers = users) {
+  tableBody.innerHTML = "";
+
+  if (filteredUsers.length === 0) {
+    emptyState.style.display = "block";
+  } else {
+    emptyState.style.display = "none";
+  }
+
+  filteredUsers.forEach((user, index) => {
+    const row = document.createElement("tr");
 
     row.innerHTML = `
-      <td>${user.name}</td>
+      <td>
+        <div class="user-cell">
+          <div class="avatar">${user.name.charAt(0).toUpperCase()}</div>
+          ${user.name}
+        </div>
+      </td>
       <td>${user.email}</td>
       <td>
-        <button onclick="editUser(${index})">Edit</button>
-        <button onclick="deleteUser(${index})">Delete</button>
+        <button class="action-btn edit-btn" onclick="editUser(${index})">Edit</button>
+        <button class="action-btn delete-btn" onclick="deleteUser(${index})">Delete</button>
       </td>
     `;
 
     tableBody.appendChild(row);
   });
+
+  updateUserCount();
 }
 
-// Add / Update user
-form.addEventListener('submit', function(e) {
+form.addEventListener("submit", function (e) {
   e.preventDefault();
 
   const user = {
@@ -55,10 +79,12 @@ form.addEventListener('submit', function(e) {
 
   if (editIndex === null) {
     users.push(user);
+    showToast("User added successfully");
   } else {
     users[editIndex] = user;
     editIndex = null;
     submitBtn.textContent = "Add User";
+    showToast("User updated successfully");
   }
 
   form.reset();
@@ -66,7 +92,6 @@ form.addEventListener('submit', function(e) {
   renderTable();
 });
 
-// Edit user
 function editUser(index) {
   const user = users[index];
   nameInput.value = user.name;
@@ -76,8 +101,25 @@ function editUser(index) {
   validateForm();
 }
 
-// Delete user
 function deleteUser(index) {
+  const confirmDelete = confirm("Are you sure you want to delete this user?");
+  if (!confirmDelete) return;
+
   users.splice(index, 1);
   renderTable();
+  showToast("User deleted");
 }
+
+searchInput.addEventListener("input", function () {
+  const searchValue = searchInput.value.toLowerCase();
+
+  const filteredUsers = users.filter(
+    user =>
+      user.name.toLowerCase().includes(searchValue) ||
+      user.email.toLowerCase().includes(searchValue)
+  );
+
+  renderTable(filteredUsers);
+});
+
+renderTable();
